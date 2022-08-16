@@ -4,6 +4,8 @@ windows_subsystem = "windows"
 )]
 
 
+mod tray;
+
 #[tauri::command]
 fn my_custom_command(invoke_message: String) {
     println!("I was invoked from JS, with this message: {}", invoke_message);
@@ -18,19 +20,50 @@ fn my_custom_command(invoke_message: String) {
 //     ).build().unwrap();
 // }
 
+
+use tauri::{SystemTray, SystemTrayMenu, SystemTrayEvent};
+use tauri::Manager;
+
 fn main() {
+    let tray_menu = SystemTrayMenu::new(); // insert the menu items here
     tauri::Builder::default()
-/*        .setup(|app| {
-            let handle = app.handle();
-            std::thread::spawn(move || {
-                tauri::WindowBuilder::new(
-                    &handle,
-                    "local",
-                    tauri::WindowUrl::App("index.html".into()),
-                ).build().unwrap();
-            });
-            Ok(())
-        })*/
+        .system_tray(SystemTray::new().with_menu(tray_menu))
+        .on_system_tray_event(|app, event| match event {
+            SystemTrayEvent::LeftClick {
+                position: _,
+                size: _,
+                ..
+            } => {
+                println!("system tray received a left click");
+            }
+            SystemTrayEvent::RightClick {
+                position: _,
+                size: _,
+                ..
+            } => {
+                println!("system tray received a right click");
+            }
+            SystemTrayEvent::DoubleClick {
+                position: _,
+                size: _,
+                ..
+            } => {
+                println!("system tray received a double click");
+            }
+            SystemTrayEvent::MenuItemClick { id, .. } => {
+                match id.as_str() {
+                    "quit" => {
+                        std::process::exit(0);
+                    }
+                    "hide" => {
+                        let window = app.get_window("main").unwrap();
+                        window.hide().unwrap();
+                    }
+                    _ => {}
+                }
+            }
+            _ => {}
+        })
         .invoke_handler(tauri::generate_handler![my_custom_command])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
