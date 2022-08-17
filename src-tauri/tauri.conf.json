@@ -55,7 +55,7 @@
     },
     "windows": [
       {
-        "title": "心语",
+        "title": "tarui",
         "width": 1000,
         "height": 650,
         "resizable": true,
