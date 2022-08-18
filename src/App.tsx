@@ -9,14 +9,20 @@ const setting = lazy(() => import('./pages/setting'))
 export default function App() {
   return (
     <div class="flex">
-      <div class="flex-none text-center w-25 p-3 text-sm text-green-500 leading-loose">
-        <ul class="divide-y divide-dashed">
+      <div class=" text-center w-25 text-sm text-green-500 leading-loose ">
+        <ul class=" flex-col h-screen border-r-2 border-r-indigo-500">
           <li class="p-3">
             <a href="/">Home</a>
           </li>
           <li class="p-3">....</li>
-          <li class="p-3">
+          <li class="p-3 ">
             <a href="/setting">Setting</a>
+          </li>
+          <li class="p-3 ">
+            <a href="/os">os</a>
+          </li>
+          <li class="p-3 ">
+            <a href="/about">about</a>
           </li>
         </ul>
       </div>
