@@ -1,23 +1,42 @@
-import { createMemo, createSignal } from 'solid-js'
-import createTemporaryWindow from '../../lib/window'
+import { os } from '@tauri-apps/api'
+import { createEffect, createSignal } from 'solid-js'
 
 export default function Home() {
-  function onclick() {
-    createTemporaryWindow('rest', '/main/rest', 3000)
-  }
+  const [arch, setArch] = createSignal('')
+  const [platform, setPlatform] = createSignal('')
+  const [tempdir, setTempdir] = createSignal('')
+  const [type, setType] = createSignal('')
+  const [version, setVersion] = createSignal('')
 
-  const [count, setCount] = createSignal(0)
-  // count 的平方派生自 count，在依赖改变的时候自动更新
-  const countPow2 = createMemo(() => count() ** 2)
+  createEffect(() => {
+    os.arch().then(setArch)
+    os.platform().then(setPlatform)
+    os.tempdir().then(setTempdir)
+    os.type().then(setType)
+    os.version().then(setVersion)
+  }, [])
 
   return (
     <>
-      <h1>home</h1>
-      <button onClick={onclick}>open window</button>
-      <button onClick={() => setCount(count() + 1)}>
-        {count()} | {countPow2()}
-      </button>
-      <button onClick={() => setCount(count() + 1)}>{count()}</button>
+      <div class="p-10 text-sm text-green-500 leading-loose">
+        <ul>
+          <li>
+            <span class="text-xs text-black pr-2">CPU 架构:</span> {arch}
+          </li>
+          <li>
+            <span class="text-xs text-black pr-2">平台名称:</span> {platform}
+          </li>
+          <li>
+            <span class="text-xs text-black pr-2">临时文件目录:</span> {tempdir}
+          </li>
+          <li>
+            <span class="text-xs text-black pr-2">系统类型:</span> {type}
+          </li>
+          <li>
+            <span class="text-xs text-black pr-2">系统版本:</span> {version}
+          </li>
+        </ul>
+      </div>
     </>
   )
 }
