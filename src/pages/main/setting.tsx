@@ -59,65 +59,82 @@ export default function Setting() {
 
   const [bootUp, setBootUp] = createSignal(false)
   const [deferred, setDeferred] = createSignal(false)
+  const [restNotice, setRestNotice] = createSignal(false)
   const [workTime, setWorkTime] = createSignal(45)
   const [restTime, setRestTime] = createSignal(10)
+
   return (
     <>
       <div class=" flex h-screen flex-col justify-center items-center">
-        <div class="form-control w-80">
-          <label class="label cursor-pointer pb-6 pr-2">
-            <span class="label-text">开机启动</span>
-            <input
-              type="checkbox"
-              class="toggle toggle-accent"
-              checked={bootUp()}
-              onchange={() => setBootUp(!bootUp())}
-            />
-          </label>
-          <label class="label cursor-pointer pb-6">
-            <span class="label-text">工作/学习时间</span>
-            <input
-              type="number"
-              class="input input-success input-sm w-14 max-w-xs"
-              value={restTime()}
-              maxlength={3}
-              onkeypress={numKeypress()}
-              onchange={event => {
-                if (typeof event.currentTarget.value === 'number')
-                  setRestTime(event.currentTarget.value)
-              }}
-            />
-          </label>
-          <label class="label cursor-pointer pb-6">
-            <span class="label-text">休息时间</span>
-            <input
-              type="number"
-              class="input input-success input-sm w-14 max-w-xs"
-              value={restTime()}
-              maxlength={3}
-              onkeypress={numKeypress()}
-              onchange={event => {
-                if (typeof event.currentTarget.value === 'number')
-                  setRestTime(event.currentTarget.value)
-              }}
-            />
-          </label>
-          <label class="label cursor-pointer pb-6 pr-2">
-            <span class="label-text">延后休息</span>
-            <input
-              type="checkbox"
-              class="toggle toggle-accent"
-              checked={deferred()}
-              onchange={() => setDeferred(!deferred())}
-            />
-          </label>
+        <div class="form-control w-2/3 ">
+          <ToggleWrap
+            title="开机启动"
+            value={bootUp()}
+            onchange={() => setBootUp(!bootUp())}
+          />
+          <RangeSliderWrap
+            title="每"
+            value={workTime()}
+            onchange={event => {
+              setWorkTime(parseInt(event.currentTarget.value))
+            }}
+          />
+          <RangeSliderWrap
+            title="休息时间"
+            value={restTime()}
+            max="99"
+            onchange={event => {
+              setRestTime(parseInt(event.currentTarget.value))
+            }}
+          />
+          <ToggleWrap
+            title="延后休息"
+            value={deferred()}
+            onchange={() => setDeferred(!deferred())}
+          />
+          <ToggleWrap
+            title="休息前弹窗通知"
+            value={restNotice()}
+            onchange={() => setRestNotice(!restNotice())}
+          />
         </div>
       </div>
     </>
   )
 }
-function numKeypress() {
-  return evt => {
-    if (['e', '+', '-'].includes(evt.key)) evt.preventDefault()
-  }
+
+const RangeSliderWrap = props => {
+  return (
+    <>
+      <label class="label cursor-pointer pb-6 grid grid-cols-6 gap-1">
+        <span class="label-text">{props.title}</span>
+        <input
+          type="range"
+          min={props.mix || '1'}
+          max={props.max || '60'}
+          value={props.value}
+          onchange={props.onchange}
+          class="range range-xs range-accent col-span-4"
+        />
+        <span>{props.value} 分钟</span>
+      </label>
+    </>
+  )
+}
+
+// 开关包装
+const ToggleWrap = props => {
+  return (
+    <>
+      <label class="label cursor-pointer pb-6 pr-2 grid grid-cols-6 gap-1">
+        <span class="label-text col-span-2">{props.title}</span>
+        <input
+          type="checkbox"
+          class="toggle toggle-accent col-start-6"
+          checked={props.value}
+          onchange={props.onchange}
+        />
+      </label>
+    </>
+  )
 }
